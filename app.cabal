@@ -1,0 +1,74 @@
+-- This file has been generated from package.yaml by hpack version 0.28.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 9544317d26f5c1ccce06753d0bd85c569d52da7d2c6542fd9e102f6c1d8db06c
+
+name:           app
+version:        0.1.0.0
+author:         Chris Stryczynski
+maintainer:     Chris Stryczynski
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+cabal-version:  >= 1.10
+extra-source-files:
+    ChangeLog.md
+
+executable startTask
+  main-is: Main.hs
+  other-modules:
+      Common
+      StopTask
+      Paths_app
+  hs-source-dirs:
+      src
+  default-extensions: LambdaCase
+  build-depends:
+      aeson
+    , aeson-pretty
+    , base >=4.11 && <4.12
+    , binary
+    , binary-orphans
+    , bytestring
+    , directory
+    , lens
+    , old-locale
+    , pretty-simple
+    , split
+    , stm
+    , string-conversions
+    , text
+    , thyme
+    , time
+    , turtle
+  default-language: Haskell2010
+
+executable stopTask
+  main-is: StopTask.hs
+  other-modules:
+      Common
+      Main
+      Paths_app
+  hs-source-dirs:
+      src
+  default-extensions: LambdaCase
+  build-depends:
+      aeson
+    , aeson-pretty
+    , base >=4.11 && <4.12
+    , binary
+    , binary-orphans
+    , bytestring
+    , directory
+    , lens
+    , old-locale
+    , pretty-simple
+    , split
+    , stm
+    , string-conversions
+    , text
+    , thyme
+    , time
+    , turtle
+  default-language: Haskell2010
