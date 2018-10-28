@@ -3,6 +3,7 @@ module StopTask where
 import Turtle (date)
 import Control.Lens.Tuple
 import Control.Lens.Setter
+import Rainbow
 
 import Common
 
@@ -17,13 +18,12 @@ stopLog = do
       let lr = last ls
       case recordIsStopped lr of
         True -> do
+          putChunkLn $ chunk "No task has been started, not able to stop." & fore red
           print "Last task:"
           print $ lr
-          error "No task has been started, not able to stop."
+          error ""
         False -> do
           encodeLogFile $
             fmapAtIndex (length ls - 1) (set _4 (Just time')) ls
-          print "Last task:"
-          print $ lr
-          print "Stopped task"
+          printStoppedTask lr
     Left e -> error e

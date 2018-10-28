@@ -1,10 +1,13 @@
+source-dirs: src
 executables:
-  startTask:
-    source-dirs: src
-    main: Main.hs
-  stopTask:
-    source-dirs: src
-    main: StopTask.hs
+  pitangaStartTask:
+    main: Main.startLog
+  pitangaStopTask:
+    main: StopTask.main
+  pitangaResumeTask:
+    main: ResumeTask.resumeTask
+  pitangaLog:
+    main: Log.showLog
 license-file: LICENSE
 build-type: Simple
 maintainer: Chris Stryczynski
@@ -13,6 +16,7 @@ dependencies:
 - turtle
 - aeson-pretty
 # common
+- rainbow
 - lens
 - aeson
 - bytestring

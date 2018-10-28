@@ -2,7 +2,7 @@
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9544317d26f5c1ccce06753d0bd85c569d52da7d2c6542fd9e102f6c1d8db06c
+-- hash: feb7834dd3ed6984bb6c4086cf8292aa763f3aab5dc1a0e656a8ef602b415f5e
 
 name:           app
 version:        0.1.0.0
@@ -15,15 +15,18 @@ cabal-version:  >= 1.10
 extra-source-files:
     ChangeLog.md
 
-executable startTask
-  main-is: Main.hs
+executable pitangaLog
+  main-is: Log.hs
   other-modules:
       Common
+      Main
+      ResumeTask
       StopTask
       Paths_app
   hs-source-dirs:
       src
   default-extensions: LambdaCase
+  ghc-options: -main-is Log.showLog
   build-depends:
       aeson
     , aeson-pretty
@@ -35,6 +38,7 @@ executable startTask
     , lens
     , old-locale
     , pretty-simple
+    , rainbow
     , split
     , stm
     , string-conversions
@@ -44,15 +48,18 @@ executable startTask
     , turtle
   default-language: Haskell2010
 
-executable stopTask
-  main-is: StopTask.hs
+executable pitangaResumeTask
+  main-is: ResumeTask.hs
   other-modules:
       Common
+      Log
       Main
+      StopTask
       Paths_app
   hs-source-dirs:
       src
   default-extensions: LambdaCase
+  ghc-options: -main-is ResumeTask.resumeTask
   build-depends:
       aeson
     , aeson-pretty
@@ -64,6 +71,73 @@ executable stopTask
     , lens
     , old-locale
     , pretty-simple
+    , rainbow
+    , split
+    , stm
+    , string-conversions
+    , text
+    , thyme
+    , time
+    , turtle
+  default-language: Haskell2010
+
+executable pitangaStartTask
+  main-is: Main.hs
+  other-modules:
+      Common
+      Log
+      ResumeTask
+      StopTask
+      Paths_app
+  hs-source-dirs:
+      src
+  default-extensions: LambdaCase
+  ghc-options: -main-is Main.startLog
+  build-depends:
+      aeson
+    , aeson-pretty
+    , base >=4.11 && <4.12
+    , binary
+    , binary-orphans
+    , bytestring
+    , directory
+    , lens
+    , old-locale
+    , pretty-simple
+    , rainbow
+    , split
+    , stm
+    , string-conversions
+    , text
+    , thyme
+    , time
+    , turtle
+  default-language: Haskell2010
+
+executable pitangaStopTask
+  main-is: StopTask.hs
+  other-modules:
+      Common
+      Log
+      Main
+      ResumeTask
+      Paths_app
+  hs-source-dirs:
+      src
+  default-extensions: LambdaCase
+  ghc-options: -main-is StopTask.main
+  build-depends:
+      aeson
+    , aeson-pretty
+    , base >=4.11 && <4.12
+    , binary
+    , binary-orphans
+    , bytestring
+    , directory
+    , lens
+    , old-locale
+    , pretty-simple
+    , rainbow
     , split
     , stm
     , string-conversions

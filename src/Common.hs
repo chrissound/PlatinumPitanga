@@ -5,6 +5,10 @@ import Data.Aeson
 import Data.Aeson.Encode.Pretty
 import Data.ByteString.Lazy.Char8 (writeFile)
 import Data.Maybe
+import Data.Time.Format
+import Data.Time.Clock
+import Data.Time.Clock.POSIX
+import Rainbow
 
 type LogEntry = (Text, Text, UTCTime, Maybe (UTCTime))
 
@@ -24,3 +28,41 @@ encodeLogFile v = do
 
 recordIsStopped :: (a,b,c, Maybe d) -> Bool
 recordIsStopped (_,_,_,endTime) = isJust endTime
+
+addJsonArrayElementFile :: LogEntry -> String -> IO ()
+addJsonArrayElementFile a fp = do
+  eitherDecodeFileStrict fp >>= \case
+    Right x -> do
+      if (length x == 0) || (recordIsStopped $ last x)
+        then
+          encodeLogFile $ x ++ [a]
+        else
+          do
+            printLastTask $ last x
+            putChunkLn $ chunk "Previous task has not been stopped, not able to start new." & fore red
+            error ""
+    Left e -> error e
+
+printStoppedTask :: LogEntry -> IO ()
+printStoppedTask x = do
+  putChunkLn $ chunk "Stopped task:" & fore green
+  print $ x
+
+printStartedTask :: LogEntry -> IO ()
+printStartedTask x = do
+  putChunkLn $ chunk "Started task:" & fore green
+  print $ x
+
+printLastTask :: LogEntry -> IO ()
+printLastTask x = do
+  putStrLn "Last task:"
+  print $ x
+
+eitherDecodeLog :: IO (Either String [LogEntry])
+eitherDecodeLog = eitherDecodeFileStrict logPath
+
+myFormatUtcTime :: UTCTime -> String
+myFormatUtcTime = formatTime defaultTimeLocale "%H:%M:%S %d/%m/%Y"
+
+myFormatDiffTime :: NominalDiffTime -> String
+myFormatDiffTime = formatTime defaultTimeLocale "%H:%M:%S" . posixSecondsToUTCTime

@@ -1,1 +1,1 @@
-ghcid '--command=stack ghci app:startTask' --test='startLog'
+ghcid '--command=stack ghci app:pitangaStartTask' --test='startLog'
