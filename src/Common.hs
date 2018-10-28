@@ -9,8 +9,16 @@ import Data.Time.Format
 import Data.Time.Clock
 import Data.Time.Clock.POSIX
 import Rainbow
+import Data.Time.Calendar
 
 type LogEntry = (Text, Text, UTCTime, Maybe (UTCTime))
+type WeekEntry = [(Day, NominalDiffTime)]
+data Entry = Entry {
+    task :: Text
+  , description :: Text
+  , start :: UTCTime
+  , end :: UTCTime
+} deriving Show
 
 decodeLog :: IO (Either String [LogEntry])
 decodeLog = eitherDecodeFileStrict logPath
@@ -66,3 +74,11 @@ myFormatUtcTime = formatTime defaultTimeLocale "%H:%M:%S %d/%m/%Y"
 
 myFormatDiffTime :: NominalDiffTime -> String
 myFormatDiffTime = formatTime defaultTimeLocale "%H:%M:%S" . posixSecondsToUTCTime
+
+filterValidEntries :: [LogEntry] -> [Entry]
+filterValidEntries [] = []
+filterValidEntries (x:xs) =
+  validLogEntry x ++ filterValidEntries xs
+  where
+    validLogEntry (a,b,c, Just d) = [Entry a b c d]
+    validLogEntry (_,_,_, Nothing) = []

@@ -21,9 +21,9 @@ startLog :: IO ()
 startLog = do
   testfile (decodeString logPath) >>=
     bool (encodeLogFile ([] :: [LogEntry])) (return ())
-  (task, description) <- options "" parser
+  (t, d) <- options "" parser
   time' <- date
-  let nr = (task, description, time', Nothing)
+  let nr = (t, d, time', Nothing)
   addJsonArrayElementFile
     (nr) logPath
   printStartedTask nr
