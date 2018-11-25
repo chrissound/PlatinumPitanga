@@ -8,6 +8,8 @@ executables:
     main: ResumeTask.resumeTask
   pitangaLog:
     main: Log.showLog
+  pitangaExport:
+    main: Export.export
 license-file: LICENSE
 build-type: Simple
 maintainer: Chris Stryczynski

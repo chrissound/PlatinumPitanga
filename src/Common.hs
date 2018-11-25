@@ -72,6 +72,9 @@ eitherDecodeLog = eitherDecodeFileStrict logPath
 myFormatUtcTime :: UTCTime -> String
 myFormatUtcTime = formatTime defaultTimeLocale "%H:%M:%S %d/%m/%Y"
 
+myFormatUtcTimeSpeardsheetFriendly :: UTCTime -> String
+myFormatUtcTimeSpeardsheetFriendly = formatTime defaultTimeLocale "%H:%M:%S %d/%m/%Y"
+
 myFormatUtcTimeOnly :: UTCTime -> String
 myFormatUtcTimeOnly = formatTime defaultTimeLocale "%H:%M:%S"
 
