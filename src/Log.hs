@@ -28,14 +28,17 @@ getDurationPerDayInWeek v ct = do
 
 showLog :: IO ()
 showLog = do
-  ct <- getCurrentTime
+  validEntries >>= \case
+    Right x -> do
+      ct <- getCurrentTime
+      putStrLn $ "Today "
+        ++ (myFormatDiffTime $ sum $ fmap (diffUTCTime <$> end <*> start) (getDurationForEntriesOnDay ( utctDay ct) $ x))
+      putStrLn $ "Week  "
+        ++ myFormatDiffTime (sum $ fmap snd $ getDurationPerDayInWeek (x) ct)
+      putStrLn ""
+    Left e -> error e
   eitherDecodeLog >>= \case
     Right x -> do
-      putStrLn $ "Today "
-        ++ (myFormatDiffTime $ sum $ fmap (diffUTCTime <$> end <*> start) (getDurationForEntriesOnDay ( utctDay ct) $ filterValidEntries x))
-      putStrLn $ "Week  "
-        ++ myFormatDiffTime (sum $ fmap snd $ getDurationPerDayInWeek (filterValidEntries x) ct)
-      putStrLn ""
       forM_ (reverse x) $ \(t,d,s,e) -> do
         case e of
           Just e' -> do

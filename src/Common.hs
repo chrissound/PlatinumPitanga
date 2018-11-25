@@ -82,3 +82,6 @@ filterValidEntries (x:xs) =
   where
     validLogEntry (a,b,c, Just d) = [Entry a b c d]
     validLogEntry (_,_,_, Nothing) = []
+
+validEntries :: IO (Either String [Entry])
+validEntries = (fmap filterValidEntries) <$> eitherDecodeLog
