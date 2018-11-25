@@ -42,8 +42,15 @@ showLog = do
       forM_ (reverse x) $ \(t,d,s,e) -> do
         case e of
           Just e' -> do
-            putStrLn $ mconcat [myFormatUtcTime s, " - ", myFormatUtcTime e']
-            putStrLn $ myFormatDiffTime $ diffUTCTime e' s
+            case (utctDay s == utctDay e') of
+              True -> do
+                putStrLn $ mconcat [myFormatUtcTimeOnly s, " - ", myFormatUtcTimeOnly e']
+                putStrLn $ myFormatDiffTime $ diffUTCTime e' s
+                putStrLn $ myFormatUtcDateOnly s
+              False -> do
+                putStrLn $ "!!! Overnight?"
+                putStrLn $ mconcat [myFormatUtcTime s, " - ", myFormatUtcTime e']
+                putStrLn $ myFormatDiffTime $ diffUTCTime e' s
           Nothing -> putStrLn $ mconcat [myFormatUtcTime s, " - ---"]
         putStrLn $ cs $ mconcat [t, " - ", d, "\n"]
     Left e -> error e
