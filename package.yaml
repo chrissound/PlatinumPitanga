@@ -9,7 +9,7 @@ executables:
   pitangaLog:
     main: Log.showLog
   pitangaExport:
-    main: Export.export
+    main: Export.main
 license-file: LICENSE
 build-type: Simple
 maintainer: Chris Stryczynski
@@ -33,6 +33,7 @@ dependencies:
 - directory
 - pretty-simple
 - string-conversions
+- optparse-applicative
 name: app
 version: '0.1.0.0'
 extra-source-files: ChangeLog.md
