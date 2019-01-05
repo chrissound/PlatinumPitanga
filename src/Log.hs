@@ -7,6 +7,7 @@ import Data.Time.Clock
 import Data.Time.Calendar
 import Data.Time.Calendar.OrdinalDate
 import Control.Lens.Operators
+import Rainbow
 
 import Common
 
@@ -44,13 +45,42 @@ showLog = do
           Just e' -> do
             case (utctDay s == utctDay e') of
               True -> do
-                putStrLn $ mconcat [myFormatUtcTimeOnly s, " - ", myFormatUtcTimeOnly e']
-                putStrLn $ myFormatDiffTime $ diffUTCTime e' s
-                putStrLn $ myFormatUtcDateOnly s
+                putTimeEntry Nothing
+                  (mconcat [myFormatUtcTimeOnly s, " - ", myFormatUtcTimeOnly e'] ++ "\n" ++ myFormatUtcDateOnly s)
+                  (myFormatDiffTime $ diffUTCTime e' s)
+
               False -> do
-                putStrLn $ "!!! Overnight?"
-                putStrLn $ mconcat [myFormatUtcTime s, " - ", myFormatUtcTime e']
-                putStrLn $ myFormatDiffTime $ diffUTCTime e' s
-          Nothing -> putStrLn $ mconcat [myFormatUtcTime s, " - ---"]
-        putStrLn $ cs $ mconcat [t, " - ", d, "\n"]
+                putTimeEntry (Just "!!! Overnight?") 
+                  (mconcat [myFormatUtcTime s, " - ", myFormatUtcTime e'])
+                  (myFormatDiffTime $ diffUTCTime e' s)
+          Nothing -> do
+            ct <- getCurrentTime
+            putInProgress "IN PROGRESS"
+            putTimeEntry Nothing
+              (mconcat [myFormatUtcTime s, " - ---"])
+              (myFormatDiffTime $ diffUTCTime ct s)
+        putTaskDesc $ cs $ mconcat [t, " - ", d, "\n"]
     Left e -> error e
+
+stringCol :: Radiant -> String -> Chunk String
+stringCol c s = ((chunk s & fore c) :: Chunk String)
+
+putTimeEntry :: Maybe String -> String -> String -> IO ()
+putTimeEntry e startEnd duration = do
+  case e of
+    Just e' -> putChunkLn $ stringCol red $ e'
+    Nothing -> pure ()
+  putChunkLn $ stringCol yellow $ startEnd
+  putChunkLn $ stringCol blue $ duration
+
+putTaskDesc :: String -> IO ()
+putTaskDesc desc = do
+  putStrLn desc
+
+putInProgress :: String -> IO ()
+putInProgress t = do
+  putChunkLn $ stringCol green $ t
+
+
+getBarVal :: Int -> String
+getBarVal = flip take "▁▂▃▄▅▆▇█"
