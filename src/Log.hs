@@ -30,17 +30,20 @@ getDurationPerDayInWeek v ct = do
                    $ sum . fmap (diffUTCTime <$> end <*> start) $ getDurationForEntriesOnDay day v
             )
 
-getLatestEntryInProgress :: IO (Either String Entry)
+getLatestEntryInProgress :: IO (Either String [Entry])
 getLatestEntryInProgress = do
   ct <- getCurrentTime
-  fmap last
-    . (fmap filterValidEntries)
-    . fmap (fmap (\(a,b,c,d) -> (a,b,c, case d of Just _ -> d; Nothing -> Just ct)))
-    <$> eitherDecodeLog
+  x <- eitherDecodeLog
+  case x of 
+    Right x' ->
+      case last x' of
+        (a,b,c, Nothing) -> pure . pure $ [Entry a b c ct]
+        _ -> pure . pure $ []
+    Left e -> pure $ Left e
 
 showLog :: IO ()
 showLog = do
-  (liftA2 (:)) <$> getLatestEntryInProgress <*> validEntries >>= \case
+  (liftA2 (++)) <$> getLatestEntryInProgress <*> validEntries >>= \case
     Right x -> do
       ct <- getCurrentTime
       let totalDurationToday = sum $ fmap (diffUTCTime <$> end <*> start) (getDurationForEntriesOnDay ( utctDay ct) $ x)
