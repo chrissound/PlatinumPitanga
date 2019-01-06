@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d377cbe49fc16a2dc444f0d57d27f43c3f65dcbd727f4277d46d5aef3efe73a6
+-- hash: b53f54561fe46ea5b3de132681abd6fca663a34f3a0396d65575f109b88c86fa
 
 name:           app
 version:        0.1.0.0
@@ -22,6 +22,7 @@ executable pitangaExport
       Common
       Log
       Main
+      MyDebug
       ResumeTask
       StopTask
       Paths_app
@@ -57,6 +58,7 @@ executable pitangaLog
       Common
       Export
       Main
+      MyDebug
       ResumeTask
       StopTask
       Paths_app
@@ -93,6 +95,7 @@ executable pitangaResumeTask
       Export
       Log
       Main
+      MyDebug
       StopTask
       Paths_app
   hs-source-dirs:
@@ -127,6 +130,7 @@ executable pitangaStartTask
       Common
       Export
       Log
+      MyDebug
       ResumeTask
       StopTask
       Paths_app
@@ -163,6 +167,7 @@ executable pitangaStopTask
       Export
       Log
       Main
+      MyDebug
       ResumeTask
       Paths_app
   hs-source-dirs:

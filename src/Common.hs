@@ -10,6 +10,7 @@ import Data.Time.Clock
 import Data.Time.Clock.POSIX
 import Rainbow
 import Data.Time.Calendar
+import Data.Bool
 
 type LogEntry = (Text, Text, UTCTime, Maybe (UTCTime))
 type WeekEntry = [(Day, NominalDiffTime)]
@@ -61,6 +62,11 @@ printStartedTask x = do
   putChunkLn $ chunk "Started task:" & fore green
   print $ x
 
+printResumeTask :: LogEntry -> IO ()
+printResumeTask x = do
+  putChunkLn $ chunk "Resuming task:" & fore green
+  print $ x
+
 printLastTask :: LogEntry -> IO ()
 printLastTask x = do
   putStrLn "Last task:"
@@ -94,3 +100,26 @@ filterValidEntries (x:xs) =
 
 validEntries :: IO (Either String [Entry])
 validEntries = (fmap filterValidEntries) <$> eitherDecodeLog
+
+bar :: Double -> String
+bar x = --flip take "▁▂▃▄▅▆▇█"
+     b8 (v8)
+  ++ bool "" " " (length (b8 v8) > 0)
+  ++ b6 (v6)
+  ++ bool "" " " (length (b6 v6) > 0)
+  ++ b4 (v4)
+  ++ bool "" " " (length (b4 v4) > 0)
+  ++ b2 (v2)
+  where
+  v8 = f 0 (8/8)
+  v6 = f (fromIntegral v8) (6/8)
+  v4 = f (fromIntegral v8 + (fromIntegral v6 * (6/8))) (4/8)
+  v2 = f (fromIntegral v8 + (fromIntegral v6 * (6/8)) + (fromIntegral v4 * (4/8))) (2/8)
+  f x' y' = floor ((x - x') / y')
+  b8 = duplicate "█ " -- "8"
+  b6 = duplicate "▆ " -- "6"
+  b4 = duplicate "▄ " -- "4"
+  b2 = duplicate "▂ " -- "2"
+
+duplicate :: String -> Int -> String
+duplicate string n = concat $ replicate n string

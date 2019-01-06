@@ -21,7 +21,7 @@ resumeTask = do
       if recordIsStopped lr
         then do
           addJsonArrayElementFile nr logPath
-          print "Resuming task"
+          printResumeTask lr
         else do
           printLastTask lr
           error "Task still running"

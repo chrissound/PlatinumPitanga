@@ -1,1 +1,1 @@
-ghcid '--command=stack ghci app:pitangaLog' --test='showLog'
+ghcid '--command=stack ghci' --test='Log.showLog'

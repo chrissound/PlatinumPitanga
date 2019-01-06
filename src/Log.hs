@@ -8,8 +8,11 @@ import Data.Time.Calendar
 import Data.Time.Calendar.OrdinalDate
 import Control.Lens.Operators
 import Rainbow
+import Control.Applicative
 
 import Common
+
+-- import MyDebug
 
 betweenUTCTime :: UTCTime -> UTCTime -> UTCTime -> Bool
 betweenUTCTime a b x = (a <= x) && (x <= b)
@@ -27,15 +30,32 @@ getDurationPerDayInWeek v ct = do
                    $ sum . fmap (diffUTCTime <$> end <*> start) $ getDurationForEntriesOnDay day v
             )
 
+getLatestEntryInProgress :: IO (Either String Entry)
+getLatestEntryInProgress = do
+  ct <- getCurrentTime
+  fmap last
+    . (fmap filterValidEntries)
+    . fmap (fmap (\(a,b,c,d) -> (a,b,c, case d of Just _ -> d; Nothing -> Just ct)))
+    <$> eitherDecodeLog
+
 showLog :: IO ()
 showLog = do
-  validEntries >>= \case
+  (liftA2 (:)) <$> getLatestEntryInProgress <*> validEntries >>= \case
     Right x -> do
       ct <- getCurrentTime
-      putStrLn $ "Today "
-        ++ (myFormatDiffTime $ sum $ fmap (diffUTCTime <$> end <*> start) (getDurationForEntriesOnDay ( utctDay ct) $ x))
-      putStrLn $ "Week  "
-        ++ myFormatDiffTime (sum $ fmap snd $ getDurationPerDayInWeek (x) ct)
+      let totalDurationToday = sum $ fmap (diffUTCTime <$> end <*> start) (getDurationForEntriesOnDay ( utctDay ct) $ x)
+      let totalDurationWeek = sum $ fmap snd $ getDurationPerDayInWeek (x) ct
+      putStrLn "--------------------------------------------"
+      putTotalTime $ "Today: "
+        ++ myFormatDiffTime totalDurationToday
+        ++ " "
+        ++ (getBarsInHours $ fromIntegral $ floor totalDurationToday)
+      putStrLn "--------------------------------------------"
+      putTotalTime $ "Week:  "
+        ++ myFormatDiffTime totalDurationWeek
+        ++ " "
+        ++ (getBarsForWeek $ fromIntegral $ floor totalDurationWeek)
+      putStrLn "--------------------------------------------"
       putStrLn ""
     Left e -> error e
   eitherDecodeLog >>= \case
@@ -47,20 +67,29 @@ showLog = do
               True -> do
                 putTimeEntry Nothing
                   (mconcat [myFormatUtcTimeOnly s, " - ", myFormatUtcTimeOnly e'] ++ "\n" ++ myFormatUtcDateOnly s)
-                  (myFormatDiffTime $ diffUTCTime e' s)
-
+                  (myFormatDiffTimeBars s e')
               False -> do
                 putTimeEntry (Just "!!! Overnight?") 
                   (mconcat [myFormatUtcTime s, " - ", myFormatUtcTime e'])
-                  (myFormatDiffTime $ diffUTCTime e' s)
+                  (myFormatDiffTimeBars s e')
+                  --((myFormatDiffTime $ diffUTCTime e' s) ++ " " ++ getBarsInHours (diffUTCTime e' s))
           Nothing -> do
             ct <- getCurrentTime
             putInProgress "IN PROGRESS"
             putTimeEntry Nothing
               (mconcat [myFormatUtcTime s, " - ---"])
-              (myFormatDiffTime $ diffUTCTime ct s)
+              (myFormatDiffTimeBars s ct)
         putTaskDesc $ cs $ mconcat [t, " - ", d, "\n"]
     Left e -> error e
+
+myFormatDiffTimeBars :: UTCTime -> UTCTime -> [Char]
+myFormatDiffTimeBars s e = (myFormatDiffTime $ diffUTCTime e s) ++ " " ++ getBarsInHours (fromIntegral $ floor $ diffUTCTime e s)
+
+getBarsInHours :: Double -> String
+getBarsInHours x = bar $ (x * 2) / (60 * 60)
+
+getBarsForWeek :: Double -> String
+getBarsForWeek x = bar $ x / (60 * 60 * 8)
 
 stringCol :: Radiant -> String -> Chunk String
 stringCol c s = ((chunk s & fore c) :: Chunk String)
@@ -81,6 +110,6 @@ putInProgress :: String -> IO ()
 putInProgress t = do
   putChunkLn $ stringCol green $ t
 
-
-getBarVal :: Int -> String
-getBarVal = flip take "▁▂▃▄▅▆▇█"
+putTotalTime :: String -> IO ()
+putTotalTime t = do
+  putChunkLn $ stringCol yellow $ t
