@@ -1,3 +1,3 @@
 :set -Wall
 :set -Wno-type-defaults
-:set args --this-week-per-day
+:set args --from "5 5 2018"

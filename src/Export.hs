@@ -13,6 +13,8 @@ import Options.Applicative
 import Control.Monad (join)
 import Data.Monoid ((<>))
 import Text.Pretty.Simple (pPrint)
+import Data.Time
+
 
 import Common
 import Log
@@ -60,28 +62,52 @@ main = join . customExecParser (prefs showHelpOnError) $
             <> help ""
             <> showDefault
             )
-        <*> 
+        <*>
             switch
             (  long "this-week-per-day"
             <> help ""
             <> showDefault
             )
+        <*>
+            strOption
+            (  long "from"
+            <> help ""
+            <> showDefault
+            )
 
-work :: Bool -> Bool -> IO ()
-work True _  = do
+work :: Bool -> Bool -> String -> IO ()
+work True _ _  = do
   exportWeek
   print "Exported this week successful"
-work _ True = do
+work _ True _ = do
   ct <- getCurrentTime
   validEntries >>= \case
     Right x -> do
       let x' = getDurationPerDayInWeek x ct
-      let x'' = getDurationPerDayInWeek x (addUTCTime ((-nominalDay)) ct)
-      pPrint $ fmap (\(a,b) -> (a, myFormatDiffTime b)) x''
+      let x'' = getDurationPerDayInWeek x (addUTCTime (7 * (-nominalDay)) ct)
+      printXyz $ x''
       print "Exported previous"
-      pPrint $ fmap (\(a,b) -> (a, myFormatDiffTime b)) x'
+      putStrLn ""
+      printXyz $ x'
       print "Exported this week per day"
     Left e -> error e
-work False False = do
-  export
-  print "Exported all successful"
+work False False dstr = do
+  ct <- getCurrentTime
+  validEntries >>= \case
+    Right x -> do
+      let timeFromString = parseTimeOrError True defaultTimeLocale "%-d %-m %Y" dstr :: UTCTime
+      let drange = [utctDay timeFromString.. utctDay ct ]
+      forM_ drange (\day -> do
+                       case (sum $ fmap (diffUTCTime <$> end <*> start) (getDurationForEntriesOnDay day x)) of
+                         0 -> pure ()
+                         v -> printXyz [(day, v)]
+                   )
+      let totalf = fmap (\day -> sum $ fmap (diffUTCTime <$> end <*> start) (getDurationForEntriesOnDay day x)) drange
+      print "Exported all successful"
+      print "Total:"
+      print $
+        ((fromIntegral $ floor $ sum totalf) / (60 * 60))
+    Left e -> error e
+
+printXyz :: (Foldable t) => t (Day, NominalDiffTime) -> IO ()
+printXyz x = forM_ x (\(a, b) -> print $ mconcat [show a, " ", myFormatDiffTime b])

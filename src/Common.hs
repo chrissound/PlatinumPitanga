@@ -88,7 +88,11 @@ myFormatUtcDateOnly :: UTCTime -> String
 myFormatUtcDateOnly = formatTime defaultTimeLocale "%d/%m/%Y"
 
 myFormatDiffTime :: NominalDiffTime -> String
-myFormatDiffTime = formatTime defaultTimeLocale "%H:%M:%S" . posixSecondsToUTCTime
+myFormatDiffTime v =
+  case formatTime defaultTimeLocale "%d" $ posixSecondsToUTCTime v of
+    "01" -> vvv
+    x -> mconcat ["days (", x, ")!!! ", vvv]
+    where vvv = formatTime defaultTimeLocale "%H:%M:%S" $ posixSecondsToUTCTime v
 
 filterValidEntries :: [LogEntry] -> [Entry]
 filterValidEntries [] = []
