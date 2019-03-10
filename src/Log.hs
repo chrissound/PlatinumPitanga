@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE FlexibleContexts #-}
 module Log where
 
 import Control.Monad
@@ -8,7 +9,10 @@ import Data.Time.Calendar
 import Data.Time.Calendar.OrdinalDate
 import Control.Lens.Operators
 import Rainbow
-import Control.Applicative
+import Data.List
+import Data.Function
+import Data.Strings
+-- import Text.Pretty.Simple
 
 import Common
 
@@ -30,24 +34,16 @@ getDurationPerDayInWeek v ct = do
                    $ sum . fmap (diffUTCTime <$> end <*> start) $ getDurationForEntriesOnDay day v
             )
 
-getLatestEntryInProgress :: IO (Either String [Entry])
-getLatestEntryInProgress = do
-  ct <- getCurrentTime
-  x <- eitherDecodeLog
-  case x of 
-    Right x' ->
-      case last x' of
-        (a,b,c, Nothing) -> pure . pure $ [Entry a b c ct]
-        _ -> pure . pure $ []
-    Left e -> pure $ Left e
+diffsTotal :: Functor f => f Entry -> f NominalDiffTime
+diffsTotal = fmap (diffUTCTime <$> end <*> start)
 
-showLog :: IO ()
-showLog = do
-  (liftA2 (++)) <$> getLatestEntryInProgress <*> validEntries >>= \case
+showLogSummary :: IO ()
+showLogSummary =
+  allEntries >>= \case
     Right x -> do
       ct <- getCurrentTime
-      let totalDurationToday = sum $ fmap (diffUTCTime <$> end <*> start) (getDurationForEntriesOnDay ( utctDay ct) $ x)
-      let totalDurationWeek = sum $ fmap snd $ getDurationPerDayInWeek (x) ct
+      let totalDurationToday = sum $ diffsTotal (getDurationForEntriesOnDay ( utctDay ct) $ x)
+      let totalDurationWeek = sum $ fmap snd $ getDurationPerDayInWeek x ct
       putStrLn "--------------------------------------------"
       putTotalTime $ "Today: "
         ++ myFormatDiffTime totalDurationToday
@@ -61,6 +57,34 @@ showLog = do
       putStrLn "--------------------------------------------"
       putStrLn ""
     Left e -> error e
+
+relativeLastMonday :: Day -> Day
+relativeLastMonday x = fromMondayStartWeek ((\(v',_,_) -> v') $ toGregorian x) x' 1 where
+  (x',_) = (mondayStartWeek x)
+
+showLogWeekAggregate :: IO ()
+showLogWeekAggregate =
+  allEntries >>= \case
+    Right x -> do
+      ct <- getCurrentTime
+      let t = filter (betweenUTCTime (UTCTime (relativeLastMonday $ utctDay ct) 0) (UTCTime (utctDay ct) 86400) . start) x
+      let t' = groupBy ((==) `on` task) (sortBy (compare `on` task) t)
+      let final = sort $ zip ((sum . diffsTotal) <$> t') (task . head <$> t')
+      let fprint (a,b) =
+               (stringCol white . cs . strPadRight ' ' 44 $ (take 43 :: String -> String) (cs b))
+            <> chunk " "
+            <> stringCol blue (cs $ myFormatDiffTime a)
+            <> chunk " "
+            <> (chunk $ getBarsInHours $ fromIntegral $ floor a)
+      mapM_ (putChunkLn . fprint) final
+      putStrLn ""
+      putStrLn "--------------------------------------------"
+    Left e -> error e
+
+showLog :: IO ()
+showLog = do
+  showLogSummary
+  showLogWeekAggregate
   eitherDecodeLog >>= \case
     Right x -> do
       forM_ (reverse x) $ \(t,d,s,e) -> do

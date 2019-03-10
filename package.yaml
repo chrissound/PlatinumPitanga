@@ -18,6 +18,7 @@ dependencies:
 - turtle
 - aeson-pretty
 # common
+- strings
 - rainbow
 - lens
 - aeson
@@ -26,7 +27,7 @@ dependencies:
 - split
 - text
 - time
-- thyme
+# - thyme
 - binary
 - binary-orphans
 - old-locale

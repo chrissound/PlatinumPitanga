@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b53f54561fe46ea5b3de132681abd6fca663a34f3a0396d65575f109b88c86fa
+-- hash: b853fdf0665d85529c9b9126b0e9e9840a6ddad9f9b189bea2874f7ba08d1109
 
 name:           app
 version:        0.1.0.0
@@ -46,8 +46,8 @@ executable pitangaExport
     , split
     , stm
     , string-conversions
+    , strings
     , text
-    , thyme
     , time
     , turtle
   default-language: Haskell2010
@@ -82,8 +82,8 @@ executable pitangaLog
     , split
     , stm
     , string-conversions
+    , strings
     , text
-    , thyme
     , time
     , turtle
   default-language: Haskell2010
@@ -118,8 +118,8 @@ executable pitangaResumeTask
     , split
     , stm
     , string-conversions
+    , strings
     , text
-    , thyme
     , time
     , turtle
   default-language: Haskell2010
@@ -154,8 +154,8 @@ executable pitangaStartTask
     , split
     , stm
     , string-conversions
+    , strings
     , text
-    , thyme
     , time
     , turtle
   default-language: Haskell2010
@@ -190,8 +190,8 @@ executable pitangaStopTask
     , split
     , stm
     , string-conversions
+    , strings
     , text
-    , thyme
     , time
     , turtle
   default-language: Haskell2010

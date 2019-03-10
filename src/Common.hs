@@ -1,6 +1,6 @@
 module Common where
 
-import Turtle (UTCTime, Text)
+-- import Turtle (liftA2, UTCTime, Text)
 import Data.Aeson
 import Data.Aeson.Encode.Pretty
 import Data.ByteString.Lazy.Char8 (writeFile)
@@ -8,9 +8,11 @@ import Data.Maybe
 import Data.Time.Format
 import Data.Time.Clock
 import Data.Time.Clock.POSIX
+import Data.Text (Text)
 import Rainbow
 import Data.Time.Calendar
 import Data.Bool
+import Control.Applicative
 
 type LogEntry = (Text, Text, UTCTime, Maybe (UTCTime))
 type WeekEntry = [(Day, NominalDiffTime)]
@@ -104,6 +106,20 @@ filterValidEntries (x:xs) =
 
 validEntries :: IO (Either String [Entry])
 validEntries = (fmap filterValidEntries) <$> eitherDecodeLog
+
+allEntries :: IO (Either String [Entry])
+allEntries = (liftA2 (++)) <$> getLatestEntryInProgress <*> validEntries
+
+getLatestEntryInProgress :: IO (Either String [Entry])
+getLatestEntryInProgress = do
+  ct <- getCurrentTime
+  x <- eitherDecodeLog
+  case x of 
+    Right x' ->
+      case last x' of
+        (a,b,c, Nothing) -> pure . pure $ [Entry a b c ct]
+        _ -> pure . pure $ []
+    Left e -> pure $ Left e
 
 bar :: Double -> String
 bar x = --flip take "▁▂▃▄▅▆▇█"
