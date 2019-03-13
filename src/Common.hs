@@ -8,9 +8,10 @@ import Data.Maybe
 import Data.Time.Format
 import Data.Time.Clock
 import Data.Time.Clock.POSIX
+import Data.Time.Calendar
+import Data.Time.Calendar.OrdinalDate
 import Data.Text (Text)
 import Rainbow
-import Data.Time.Calendar
 import Data.Bool
 import Control.Applicative
 
@@ -143,3 +144,8 @@ bar x = --flip take "▁▂▃▄▅▆▇█"
 
 duplicate :: String -> Int -> String
 duplicate string n = concat $ replicate n string
+
+getEndOfWeekDay :: Day -> Day
+getEndOfWeekDay fromTimeDay = addDays
+  (7 - (fromIntegral $ snd $ mondayStartWeek fromTimeDay))
+  fromTimeDay

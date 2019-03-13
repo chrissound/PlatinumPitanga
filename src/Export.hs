@@ -14,6 +14,7 @@ import Control.Monad (join)
 import Data.Monoid ((<>))
 import Text.Pretty.Simple (pPrint)
 import Data.Time
+import Data.Time.Calendar
 
 
 import Common
@@ -58,40 +59,62 @@ main = join . customExecParser (prefs showHelpOnError) $
     parser =
       work
         <$> switch
-            (  long "this-week"
-            <> help ""
+            (  long "raw-json"
+            <> help "Export raw values as JSON"
             <> showDefault
             )
         <*>
             switch
-            (  long "this-week-per-day"
-            <> help ""
+            (  long "group-by-day"
+            <> help "Sum aggregate group by day"
             <> showDefault
             )
         <*>
-            strOption
+          (
+            optional
+            $ strOption
             (  long "from"
-            <> help ""
+            <> help "dd mm yy"
             <> showDefault
             )
+          )
 
-work :: Bool -> Bool -> String -> IO ()
+
+work :: Bool -> Bool -> Maybe String -> IO ()
 work True _ _  = do
   exportWeek
   print "Exported this week successful"
-work _ True _ = do
+work _ True ft = do
   ct <- getCurrentTime
-  validEntries >>= \case
-    Right x -> do
-      let x' = getDurationPerDayInWeek x ct
-      let x'' = getDurationPerDayInWeek x (addUTCTime (7 * (-nominalDay)) ct)
-      printXyz $ x''
-      print "Exported previous"
-      putStrLn ""
-      printXyz $ x'
-      print "Exported this week per day"
-    Left e -> error e
-work False False dstr = do
+  let cd = utctDay ct
+  case ft of
+    Just ft' -> do
+      let fromTime = parseTimeOrError True defaultTimeLocale "%-d %-m %Y" ft' :: UTCTime
+      let fromTimeDay = utctDay fromTime
+      validEntries >>= \case
+        Right x -> do
+          print $ "From: " <> show fromTime
+          let endOfWeek = getEndOfWeekDay fromTimeDay
+          let currentEndOfWeek = getEndOfWeekDay cd
+          let wCount = ceiling (fromIntegral (diffDays currentEndOfWeek endOfWeek) / 7.0)
+          let s = reverse $ (\ss' -> addDays (negate $ ss' * 7) currentEndOfWeek) <$> [0..wCount]
+
+          forM_ s (\s' -> do
+            putStrLn "-----------"
+            printXyz . getDurationPerDayInWeek x . flip UTCTime (secondsToDiffTime ((60*60*24) - 1)) $ s')
+
+          putStrLn "-----------"
+          print "Exported week per day"
+        Left e -> error e
+    Nothing -> do
+      validEntries >>= \case
+        Right x -> do
+          let x' = getDurationPerDayInWeek x ct
+          printXyz $ x'
+          print "Exported week per day"
+        Left e -> error e
+work False False Nothing = error "Invalid params"
+work False False (Just dstr) = do
   ct <- getCurrentTime
   validEntries >>= \case
     Right x -> do
@@ -109,5 +132,14 @@ work False False dstr = do
         ((fromIntegral $ floor $ sum totalf) / (60 * 60))
     Left e -> error e
 
-printXyz :: (Foldable t) => t (Day, NominalDiffTime) -> IO ()
-printXyz x = forM_ x (\(a, b) -> print $ mconcat [show a, " ", myFormatDiffTime b])
+printXyz :: [(Day, NominalDiffTime)] -> IO ()
+printXyz x = do
+  let f = (,)
+            <$> ((show . fst))
+            <*> (myFormatDiffTime . snd)
+  -- let fff = (,,) <$> (show . fst) <*> y y
+  -- grrr wait for time-1.9.2???
+  -- let days = [Monday .. Sunday]
+  let days = ["M", "T", "W", "T", "F", "S", "S" ]
+  forM_ (zip days (f <$> x)) $ \x' -> do
+    print x'
