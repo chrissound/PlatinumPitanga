@@ -15,6 +15,7 @@ import Data.Monoid ((<>))
 import Text.Pretty.Simple (pPrint)
 import Data.Time
 import Data.Time.Calendar
+import Data.Text (Text)
 
 
 import Common
@@ -36,6 +37,20 @@ exportEntries x = do
           x
       )
 
+exportEntries' :: [(Day, NominalDiffTime, Text)] -> IO ()
+exportEntries' x = do
+  encodeFile "log_export_group_by_taskday.json"
+    $  ("Task","Date","Duration")
+        : (fmap
+          (\(a,b,c) ->
+              ( c
+              , myFormatUtcDateOnly a
+              , myFormatDiffTime $ b
+            )
+          )
+          x
+      )
+
 export :: IO ()
 export = do
   validEntries >>= \case
@@ -48,6 +63,12 @@ exportWeek = do
     Right x -> exportEntries $ filter (const True) x
     Left e -> error e
 
+work'  :: Bool -> Bool -> Bool -> Maybe String -> IO ()
+work' True _ _ x = work ExportRawJson x
+work' _ True _ x = work ExportGroupByDay x
+work' _ _ True x = work ExportGroupByDayAndTask x
+work' _ _ _ _   = error "???"
+
 main :: IO ()
 main = join . customExecParser (prefs showHelpOnError) $
   info (helper <*> parser)
@@ -57,8 +78,9 @@ main = join . customExecParser (prefs showHelpOnError) $
   where
     parser :: Parser (IO ())
     parser =
-      work
-        <$> switch
+      work'
+        <$>
+            switch
             (  long "raw-json"
             <> help "Export raw values as JSON"
             <> showDefault
@@ -67,6 +89,12 @@ main = join . customExecParser (prefs showHelpOnError) $
             switch
             (  long "group-by-day"
             <> help "Sum aggregate group by day"
+            <> showDefault
+            )
+        <*>
+            switch
+            (  long "group-by-day-and-task"
+            <> help "Sum aggregate group by day and task"
             <> showDefault
             )
         <*>
@@ -79,12 +107,25 @@ main = join . customExecParser (prefs showHelpOnError) $
             )
           )
 
+data Export = ExportRawJson | ExportGroupByDay | ExportGroupByDayAndTask
 
-work :: Bool -> Bool -> Maybe String -> IO ()
-work True _ _  = do
+
+work :: Export -> Maybe String -> IO ()
+work ExportRawJson _ = do
   exportWeek
   print "Exported this week successful"
-work _ True ft = do
+work ExportGroupByDayAndTask ft = do
+  case ft of
+    Just ft' -> do
+      let fromTime = parseTimeOrError True defaultTimeLocale "%-d %-m %Y" ft' :: UTCTime
+      print $ "From: " <> show fromTime
+      z <- exportGroupByTask $ utctDay fromTime
+      exportEntries' $ mconcat $ (\(a,b) -> zip3 (repeat a ) (fst <$> b) (snd <$> b)) <$> z
+      -- -- pPrint $ mconcat $ (\(a,b) -> zip3 (repeat a ) (fst <$> b) (snd <$> b)) <$> z
+      -- pPrint z
+      print "Export success"
+    Nothing -> error "???"
+work ExportGroupByDay ft = do
   ct <- getCurrentTime
   let cd = utctDay ct
   case ft of
@@ -113,24 +154,23 @@ work _ True ft = do
           printXyz $ x'
           print "Exported week per day"
         Left e -> error e
-work False False Nothing = error "Invalid params"
-work False False (Just dstr) = do
-  ct <- getCurrentTime
-  validEntries >>= \case
-    Right x -> do
-      let timeFromString = parseTimeOrError True defaultTimeLocale "%-d %-m %Y" dstr :: UTCTime
-      let drange = [utctDay timeFromString.. utctDay ct ]
-      forM_ drange (\day -> do
-                       case (sum $ fmap (diffUTCTime <$> end <*> start) (getDurationForEntriesOnDay day x)) of
-                         0 -> pure ()
-                         v -> printXyz [(day, v)]
-                   )
-      let totalf = fmap (\day -> sum $ fmap (diffUTCTime <$> end <*> start) (getDurationForEntriesOnDay day x)) drange
-      print "Exported all successful"
-      print "Total:"
-      print $
-        ((fromIntegral $ floor $ sum totalf) / (60 * 60))
-    Left e -> error e
+-- work False False (Just dstr) = do
+--   ct <- getCurrentTime
+--   validEntries >>= \case
+--     Right x -> do
+--       let timeFromString = parseTimeOrError True defaultTimeLocale "%-d %-m %Y" dstr :: UTCTime
+--       let drange = [utctDay timeFromString.. utctDay ct ]
+--       forM_ drange (\day -> do
+--                        case (sum $ fmap (diffUTCTime <$> end <*> start) (getDurationForEntriesOnDay day x)) of
+--                          0 -> pure ()
+--                          v -> printXyz [(day, v)]
+--                    )
+--       let totalf = fmap (\day -> sum $ fmap (diffUTCTime <$> end <*> start) (getDurationForEntriesOnDay day x)) drange
+--       print "Exported all successful"
+--       print "Total:"
+--       print $
+--         ((fromIntegral $ floor $ sum totalf) / (60 * 60))
+--     Left e -> error e
 
 printXyz :: [(Day, NominalDiffTime)] -> IO ()
 printXyz x = do

@@ -12,6 +12,7 @@ import Rainbow
 import Data.List
 import Data.Function
 import Data.Strings
+import Data.Text (Text)
 -- import Text.Pretty.Simple
 
 import Common
@@ -79,6 +80,25 @@ showLogWeekAggregate =
       mapM_ (putChunkLn . fprint) final
       putStrLn ""
       putStrLn "--------------------------------------------"
+    Left e -> error e
+
+filterByDay :: Day -> [Entry] -> [Entry]
+filterByDay d = filter (betweenUTCTime (UTCTime d 0) (UTCTime d 86400) . start)
+
+exportGroupByTask' :: [Entry] -> Day -> [(NominalDiffTime, Text)]
+exportGroupByTask' entries d = do
+  let t = filterByDay d entries
+  let t' = groupBy ((==) `on` task) (sortBy (compare `on` task) t)
+  sort $
+    zip ((sum . diffsTotal) <$> t') (task . head <$> t')
+
+exportGroupByTask :: Day -> IO [(Day, [(NominalDiffTime, Text)])]
+exportGroupByTask d =
+  allEntries >>= \case
+    Right x -> do
+      ct <- getCurrentTime
+      let z = (\x'' -> addDays (x'') d) <$> [0..diffDays (utctDay ct) d]
+      pure $ zip z (exportGroupByTask' x <$> z)
     Left e -> error e
 
 showLog :: IO ()
