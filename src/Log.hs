@@ -112,7 +112,7 @@ showLog (PitangaLogCommand limit) = do
       let zzz = (case limit of
             Just (First f) -> toList . slice 0 f . fromList
             Just (Last f) -> toList . slice (length x - f) (f) . fromList
-            Nothing -> id) x
+            Nothing -> id) $ reverse x
 
       forM_ (zzz) $ \(t,d,s,e) -> do
         case e of
