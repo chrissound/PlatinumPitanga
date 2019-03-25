@@ -7,9 +7,6 @@ import Rainbow
 
 import Common
 
-main :: IO ()
-main = stopLog
-
 stopLog :: IO ()
 stopLog = do
   time' <- date

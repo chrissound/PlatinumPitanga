@@ -17,7 +17,6 @@ import Data.Time
 import Data.Time.Calendar
 import Data.Text (Text)
 
-
 import Common
 import Log
 
@@ -63,23 +62,30 @@ exportWeek = do
     Right x -> exportEntries $ filter (const True) x
     Left e -> error e
 
-work'  :: Bool -> Bool -> Bool -> Maybe String -> IO ()
-work' True _ _ x = work ExportRawJson x
-work' _ True _ x = work ExportGroupByDay x
-work' _ _ True x = work ExportGroupByDayAndTask x
-work' _ _ _ _   = error "???"
+-- work'  :: Bool -> Bool -> Bool -> Maybe String -> IO ()
+-- work' = work''
 
-main :: IO ()
-main = join . customExecParser (prefs showHelpOnError) $
-  info (helper <*> parser)
-  (  fullDesc
-  <> header "list directories"
-  )
-  where
-    parser :: Parser (IO ())
-    parser =
-      work'
-        <$>
+work'' :: Bool -> Bool -> Bool -> Maybe String -> Export2
+work'' True _ _ x = Export2 ExportRawJson x
+work'' _ True _ x = Export2 ExportGroupByDay x
+work'' _ _ True x = Export2 ExportGroupByDayAndTask x
+work'' _ _ _ _   = error "???"
+
+-- main :: IO ()
+-- main = join . customExecParser (prefs showHelpOnError) $
+--   info (helper <*> parser)
+--   (  fullDesc
+--   <> header "list directories"
+--   )
+--   where
+--     parser :: Parser (IO ())
+--     parser =
+--       parser''' work
+
+
+parser :: Parser Export2
+parser =
+        (work'') <$>
             switch
             (  long "raw-json"
             <> help "Export raw values as JSON"
@@ -108,24 +114,23 @@ main = join . customExecParser (prefs showHelpOnError) $
           )
 
 data Export = ExportRawJson | ExportGroupByDay | ExportGroupByDayAndTask
+data Export2 = Export2 (Export) (Maybe String)
 
 
-work :: Export -> Maybe String -> IO ()
-work ExportRawJson _ = do
+work :: Export2 -> IO ()
+work (Export2 ExportRawJson _) = do
   exportWeek
   print "Exported this week successful"
-work ExportGroupByDayAndTask ft = do
+work (Export2 ExportGroupByDayAndTask ft) = do
   case ft of
     Just ft' -> do
       let fromTime = parseTimeOrError True defaultTimeLocale "%-d %-m %Y" ft' :: UTCTime
       print $ "From: " <> show fromTime
       z <- exportGroupByTask $ utctDay fromTime
       exportEntries' $ mconcat $ (\(a,b) -> zip3 (repeat a ) (fst <$> b) (snd <$> b)) <$> z
-      -- -- pPrint $ mconcat $ (\(a,b) -> zip3 (repeat a ) (fst <$> b) (snd <$> b)) <$> z
-      -- pPrint z
       print "Export success"
     Nothing -> error "???"
-work ExportGroupByDay ft = do
+work (Export2 ExportGroupByDay ft) = do
   ct <- getCurrentTime
   let cd = utctDay ct
   case ft of

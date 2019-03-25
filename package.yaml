@@ -1,15 +1,7 @@
 source-dirs: src
 executables:
-  pitangaStartTask:
-    main: Main.startLog
-  pitangaStopTask:
-    main: StopTask.main
-  pitangaResumeTask:
-    main: ResumeTask.resumeTask
-  pitangaLog:
-    main: Log.showLog
-  pitangaExport:
-    main: Export.main
+  pitanga:
+    main: Main.main
 license-file: LICENSE
 build-type: Simple
 maintainer: Chris Stryczynski
@@ -17,19 +9,14 @@ dependencies:
 - base >=4.11 && <4.12
 - turtle
 - aeson-pretty
-# common
 - strings
 - rainbow
 - lens
 - aeson
 - bytestring
-- stm
 - split
 - text
 - time
-# - thyme
-- binary
-- binary-orphans
 - old-locale
 - directory
 - pretty-simple

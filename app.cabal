@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.31.1.
+-- This file has been generated from package.yaml by hpack version 0.31.2.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b853fdf0665d85529c9b9126b0e9e9840a6ddad9f9b189bea2874f7ba08d1109
+-- hash: 23855cdb223fe566f90d15b49498fde290eba549f7fbdbc1ef47db878b413e71
 
 name:           app
 version:        0.1.0.0
@@ -16,115 +16,7 @@ build-type:     Simple
 extra-source-files:
     ChangeLog.md
 
-executable pitangaExport
-  main-is: Export.hs
-  other-modules:
-      Common
-      Log
-      Main
-      MyDebug
-      ResumeTask
-      StopTask
-      Paths_app
-  hs-source-dirs:
-      src
-  default-extensions: LambdaCase
-  ghc-options: -main-is Export.main
-  build-depends:
-      aeson
-    , aeson-pretty
-    , base >=4.11 && <4.12
-    , binary
-    , binary-orphans
-    , bytestring
-    , directory
-    , lens
-    , old-locale
-    , optparse-applicative
-    , pretty-simple
-    , rainbow
-    , split
-    , stm
-    , string-conversions
-    , strings
-    , text
-    , time
-    , turtle
-  default-language: Haskell2010
-
-executable pitangaLog
-  main-is: Log.hs
-  other-modules:
-      Common
-      Export
-      Main
-      MyDebug
-      ResumeTask
-      StopTask
-      Paths_app
-  hs-source-dirs:
-      src
-  default-extensions: LambdaCase
-  ghc-options: -main-is Log.showLog
-  build-depends:
-      aeson
-    , aeson-pretty
-    , base >=4.11 && <4.12
-    , binary
-    , binary-orphans
-    , bytestring
-    , directory
-    , lens
-    , old-locale
-    , optparse-applicative
-    , pretty-simple
-    , rainbow
-    , split
-    , stm
-    , string-conversions
-    , strings
-    , text
-    , time
-    , turtle
-  default-language: Haskell2010
-
-executable pitangaResumeTask
-  main-is: ResumeTask.hs
-  other-modules:
-      Common
-      Export
-      Log
-      Main
-      MyDebug
-      StopTask
-      Paths_app
-  hs-source-dirs:
-      src
-  default-extensions: LambdaCase
-  ghc-options: -main-is ResumeTask.resumeTask
-  build-depends:
-      aeson
-    , aeson-pretty
-    , base >=4.11 && <4.12
-    , binary
-    , binary-orphans
-    , bytestring
-    , directory
-    , lens
-    , old-locale
-    , optparse-applicative
-    , pretty-simple
-    , rainbow
-    , split
-    , stm
-    , string-conversions
-    , strings
-    , text
-    , time
-    , turtle
-  default-language: Haskell2010
-
-executable pitangaStartTask
+executable pitanga
   main-is: Main.hs
   other-modules:
       Common
@@ -137,13 +29,11 @@ executable pitangaStartTask
   hs-source-dirs:
       src
   default-extensions: LambdaCase
-  ghc-options: -main-is Main.startLog
+  ghc-options: -main-is Main.main
   build-depends:
       aeson
     , aeson-pretty
     , base >=4.11 && <4.12
-    , binary
-    , binary-orphans
     , bytestring
     , directory
     , lens
@@ -152,43 +42,6 @@ executable pitangaStartTask
     , pretty-simple
     , rainbow
     , split
-    , stm
-    , string-conversions
-    , strings
-    , text
-    , time
-    , turtle
-  default-language: Haskell2010
-
-executable pitangaStopTask
-  main-is: StopTask.hs
-  other-modules:
-      Common
-      Export
-      Log
-      Main
-      MyDebug
-      ResumeTask
-      Paths_app
-  hs-source-dirs:
-      src
-  default-extensions: LambdaCase
-  ghc-options: -main-is StopTask.main
-  build-depends:
-      aeson
-    , aeson-pretty
-    , base >=4.11 && <4.12
-    , binary
-    , binary-orphans
-    , bytestring
-    , directory
-    , lens
-    , old-locale
-    , optparse-applicative
-    , pretty-simple
-    , rainbow
-    , split
-    , stm
     , string-conversions
     , strings
     , text

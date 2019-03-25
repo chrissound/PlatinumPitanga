@@ -1,3 +1,5 @@
 :set -Wall
 :set -Wno-type-defaults
-:set args --group-by-day-and-task --from "10 3 2019"
+-- :set args --group-by-day-and-task --from "10 3 2019"
+-- :set args export --group-by-day-and-task --from "10 3 2019"
+:set args export --help
