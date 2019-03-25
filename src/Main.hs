@@ -13,7 +13,7 @@ import ResumeTask
 import Log
 import Export (work, Export2(..), parser)
 
-data PitangaCommand = PitangaStart (Text, Text) | PitangaStop | PitangaResume | PitangaLog | PitangaExport Export2
+data PitangaCommand = PitangaStart (Text, Text) | PitangaStop | PitangaResume | PitangaLog (PitangaLogCommand) | PitangaExport Export2
 
 parser :: Parser PitangaCommand --(Text, Text)
 parser =
@@ -51,7 +51,7 @@ parser =
   subparser
     (command "log"
         (info
-          (pure PitangaLog <**> helper)
+          ((PitangaLog <$> Log.parser) <**> helper)
           $ progDesc "Log"
         )
       )
@@ -81,7 +81,7 @@ pitangaCommand :: PitangaCommand -> IO ()
 pitangaCommand (PitangaStart x) = startLog x
 pitangaCommand (PitangaStop) = stopLog
 pitangaCommand (PitangaResume) = resumeTask
-pitangaCommand (PitangaLog) = showLog
+pitangaCommand (PitangaLog x) = showLog x
 pitangaCommand (PitangaExport x) = work x
 
 startLog :: (Text,Text) -> IO ()

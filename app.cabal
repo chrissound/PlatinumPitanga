@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 23855cdb223fe566f90d15b49498fde290eba549f7fbdbc1ef47db878b413e71
+-- hash: 89a249b55ecf7b79de1aee095459f6a7111830ae4d0e62bb661f345635f0b0ef
 
 name:           app
 version:        0.1.0.0
@@ -47,4 +47,5 @@ executable pitanga
     , text
     , time
     , turtle
+    , vector
   default-language: Haskell2010

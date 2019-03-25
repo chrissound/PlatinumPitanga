@@ -22,6 +22,7 @@ dependencies:
 - pretty-simple
 - string-conversions
 - optparse-applicative
+- vector
 name: app
 version: '0.1.0.0'
 extra-source-files: ChangeLog.md

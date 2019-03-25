@@ -13,11 +13,13 @@ import Data.List
 import Data.Function
 import Data.Strings
 import Data.Text (Text)
--- import Text.Pretty.Simple
+import Options.Applicative
+import Data.Vector (slice, fromList, toList)
 
 import Common
 
--- import MyDebug
+data Limit = First Int | Last Int
+data PitangaLogCommand = PitangaLogCommand (Maybe Limit)
 
 betweenUTCTime :: UTCTime -> UTCTime -> UTCTime -> Bool
 betweenUTCTime a b x = (a <= x) && (x <= b)
@@ -101,13 +103,18 @@ exportGroupByTask d =
       pure $ zip z (exportGroupByTask' x <$> z)
     Left e -> error e
 
-showLog :: IO ()
-showLog = do
+showLog :: PitangaLogCommand -> IO ()
+showLog (PitangaLogCommand limit) = do
   showLogSummary
   showLogWeekAggregate
   eitherDecodeLog >>= \case
     Right x -> do
-      forM_ (reverse x) $ \(t,d,s,e) -> do
+      let zzz = (case limit of
+            Just (First f) -> toList . slice 0 f . fromList
+            Just (Last f) -> toList . slice (length x - f) (f) . fromList
+            Nothing -> id) x
+
+      forM_ (zzz) $ \(t,d,s,e) -> do
         case e of
           Just e' -> do
             case (utctDay s == utctDay e') of
@@ -160,3 +167,26 @@ putInProgress t = do
 putTotalTime :: String -> IO ()
 putTotalTime t = do
   putChunkLn $ stringCol yellow $ t
+
+parser :: Parser PitangaLogCommand
+parser =
+  PitangaLogCommand
+  <$>
+  optional
+  (
+    First <$>
+    (
+        option auto
+        (  long "first"
+        <> help "show first n"
+        )
+    )
+    <|>
+    Last <$>
+    (
+        option auto
+        (  long "last"
+        <> help "show last n"
+        )
+    )
+  )
