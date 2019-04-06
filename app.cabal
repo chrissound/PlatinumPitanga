@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 89a249b55ecf7b79de1aee095459f6a7111830ae4d0e62bb661f345635f0b0ef
+-- hash: 005583884ab5d62a9b59f854075a1a6e6208e2f2545fda1e79b4e549ccf218da
 
 name:           app
 version:        0.1.0.0
@@ -25,6 +25,7 @@ executable pitanga
       MyDebug
       ResumeTask
       StopTask
+      Types
       Paths_app
   hs-source-dirs:
       src
@@ -33,6 +34,7 @@ executable pitanga
   build-depends:
       aeson
     , aeson-pretty
+    , attoparsec
     , base >=4.11 && <4.12
     , bytestring
     , directory

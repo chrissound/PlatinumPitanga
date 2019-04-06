@@ -11,9 +11,9 @@ import Options.Applicative
 import StopTask
 import ResumeTask
 import Log
-import Export (work, Export2(..), parser)
+import Export (work, parser)
+import Types
 
-data PitangaCommand = PitangaStart (Text, Text) | PitangaStop | PitangaResume | PitangaLog (PitangaLogCommand) | PitangaExport Export2
 
 parser :: Parser PitangaCommand --(Text, Text)
 parser =
@@ -43,7 +43,7 @@ parser =
   subparser
     (command "resume"
         (info
-          (pure PitangaResume <**> helper)
+          (PitangaCommandResume <$> ResumeTask.parser <**> helper)
           $ progDesc "Resume the last stopped task"
         )
       )
@@ -80,17 +80,6 @@ myFormatUtcTime = formatTime defaultTimeLocale "%d/%m/%Y %H:%M"
 pitangaCommand :: PitangaCommand -> IO ()
 pitangaCommand (PitangaStart x) = startLog x
 pitangaCommand (PitangaStop) = stopLog
-pitangaCommand (PitangaResume) = resumeTask
+pitangaCommand (PitangaCommandResume x) = resumeTask' x
 pitangaCommand (PitangaLog x) = showLog x
 pitangaCommand (PitangaExport x) = work x
-
-startLog :: (Text,Text) -> IO ()
-startLog (t,d) = do
-  testfile (decodeString logPath) >>=
-    bool (encodeLogFile ([] :: [LogEntry])) (return ())
-  -- (t, d) <- options "" parser
-  time' <- date
-  let nr = (t, d, time', Nothing)
-  addJsonArrayElementFile
-    (nr) logPath
-  printStartedTask nr

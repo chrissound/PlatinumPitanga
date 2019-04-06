@@ -20,6 +20,9 @@ import Data.Text (Text)
 import Common
 import Log
 
+data Export = ExportRawJson | ExportGroupByDay | ExportGroupByDayAndTask
+data Export2 = Export2 (Export) (Maybe String)
+
 exportEntries :: [Entry] -> IO ()
 exportEntries x = do
   encodeFile "log_export.json"
@@ -112,10 +115,6 @@ parser =
             <> showDefault
             )
           )
-
-data Export = ExportRawJson | ExportGroupByDay | ExportGroupByDayAndTask
-data Export2 = Export2 (Export) (Maybe String)
-
 
 work :: Export2 -> IO ()
 work (Export2 ExportRawJson _) = do

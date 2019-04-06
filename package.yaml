@@ -23,6 +23,7 @@ dependencies:
 - string-conversions
 - optparse-applicative
 - vector
+- attoparsec
 name: app
 version: '0.1.0.0'
 extra-source-files: ChangeLog.md

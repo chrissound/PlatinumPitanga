@@ -2,4 +2,5 @@
 :set -Wno-type-defaults
 -- :set args --group-by-day-and-task --from "10 3 2019"
 -- :set args export --group-by-day-and-task --from "10 3 2019"
-:set args log --first 1
+:set args resume --suggestions
+-- :set args resume --accept-suggestion ""
