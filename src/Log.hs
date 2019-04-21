@@ -22,7 +22,10 @@ data Limit = First Int | Last Int
 data PitangaLogCommand = PitangaLogCommand (Maybe Limit)
 
 betweenUTCTime :: UTCTime -> UTCTime -> UTCTime -> Bool
-betweenUTCTime a b x = (a <= x) && (x <= b)
+betweenUTCTime = between
+
+between :: (Ord a) => a -> a -> a -> Bool
+between a b x = (a <= x) && (x <= b)
 
 getDurationForEntriesOnDay :: Day -> [Entry] -> [Entry]
 getDurationForEntriesOnDay d = filter (betweenUTCTime (UTCTime d 0) (UTCTime d 86400) . start)

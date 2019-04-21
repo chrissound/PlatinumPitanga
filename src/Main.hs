@@ -1,11 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
-import Turtle (Parser,Text,UTCTime, argText, date, testfile, decodeString)
+import Turtle (Parser, UTCTime)
 import Data.Time.Format
-import Data.Bool
 
-import Common
+-- import Common
 import Options.Applicative
 
 import StopTask
@@ -13,7 +12,23 @@ import ResumeTask
 import Log
 import Export (work, parser)
 import Types
+import Data.String
+import Data.Text
+import Options.Applicative.Types (ReadM, readerAsk)
 
+nonEmptystr :: IsString s => ReadM s
+nonEmptystr = do
+  readerAsk >>= \case
+    "" -> fail "Invalid argument: Empty string"
+    x -> pure $ fromString x
+
+parserStart :: Parser (Text,Text)
+parserStart = do
+  (,)
+  <$>
+  argument nonEmptystr (metavar "task")
+  <*>
+  argument str (metavar "description")
 
 parser :: Parser PitangaCommand --(Text, Text)
 parser =
@@ -21,12 +36,7 @@ parser =
     (command "start"
         (info
           ((
-            PitangaStart <$>
-            (
-              (,)
-              <$> argText "task"  ""
-              <*> argText "description" ""
-            )
+            PitangaStart <$> parserStart
           ) <**> helper)
           $ progDesc "Start a new task"
         )

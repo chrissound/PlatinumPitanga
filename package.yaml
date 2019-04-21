@@ -6,7 +6,7 @@ license-file: LICENSE
 build-type: Simple
 maintainer: Chris Stryczynski
 dependencies:
-- base >=4.11 && <4.12
+- base >=4.11 && <4.15
 - turtle
 - aeson-pretty
 - strings
@@ -24,10 +24,17 @@ dependencies:
 - optparse-applicative
 - vector
 - attoparsec
-name: app
-version: '0.1.0.0'
+name: platinumpitanga
+version: '1.0.0.0'
 extra-source-files: ChangeLog.md
 author: Chris Stryczynski
 license: BSD3
 default-extensions: 
   - LambdaCase
+library:
+  source-dirs: src
+  # exposed-modules:
+  #   - Hpack
+  #   - Hpack.Config
+  #   - Hpack.Render
+  #   - Hpack.Yaml

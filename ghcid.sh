@@ -1,1 +1,1 @@
-ghcid '--command=stack ghci app:pitanga' --test='Main.main'
+ghcid '--command=stack ghci platinumpitanga:pitanga' --test='Main.main'
