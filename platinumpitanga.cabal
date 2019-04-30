@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 005583884ab5d62a9b59f854075a1a6e6208e2f2545fda1e79b4e549ccf218da
+-- hash: f2870081f905258e89b39b826d211c55b806a8b93b35bf1fa58e3a65292df800
 
-name:           app
-version:        0.1.0.0
+name:           platinumpitanga
+version:        1.0.0.0
 author:         Chris Stryczynski
 maintainer:     Chris Stryczynski
 license:        BSD3
@@ -15,6 +15,43 @@ license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
     ChangeLog.md
+
+library
+  exposed-modules:
+      Common
+      Export
+      Log
+      Main
+      MyDebug
+      ResumeTask
+      StopTask
+      Types
+  other-modules:
+      Paths_platinumpitanga
+  hs-source-dirs:
+      src
+      src
+  default-extensions: LambdaCase
+  build-depends:
+      aeson
+    , aeson-pretty
+    , attoparsec
+    , base >=4.11 && <4.15
+    , bytestring
+    , directory
+    , lens
+    , old-locale
+    , optparse-applicative
+    , pretty-simple
+    , rainbow
+    , split
+    , string-conversions
+    , strings
+    , text
+    , time
+    , turtle
+    , vector
+  default-language: Haskell2010
 
 executable pitanga
   main-is: Main.hs
@@ -26,7 +63,7 @@ executable pitanga
       ResumeTask
       StopTask
       Types
-      Paths_app
+      Paths_platinumpitanga
   hs-source-dirs:
       src
   default-extensions: LambdaCase
@@ -35,7 +72,7 @@ executable pitanga
       aeson
     , aeson-pretty
     , attoparsec
-    , base >=4.11 && <4.12
+    , base >=4.11 && <4.15
     , bytestring
     , directory
     , lens

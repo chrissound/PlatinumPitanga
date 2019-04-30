@@ -15,7 +15,7 @@
 # resolver:
 #  name: custom-snapshot
 #  location: "./custom-snapshot.yaml"
-resolver: lts-13.15
+resolver: lts-13.18
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -40,8 +40,10 @@ packages:
 # Dependency packages to be pulled from upstream that are not in the resolver
 # (e.g., acme-missiles-0.3)
 extra-deps: 
-- thyme-0.3.5.5
 - strings-1.1@sha256:0285dec4c8ab262359342b3e5ef1eb567074669461b9b38404f1cb870c881c5c
+- time-1.9.2
+
+allow-newer: true
 
 
 # Override default flag values for local packages and extra-deps

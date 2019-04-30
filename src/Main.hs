@@ -15,6 +15,7 @@ import Types
 import Data.String
 import Data.Text
 import Options.Applicative.Types (ReadM, readerAsk)
+import Amend
 
 nonEmptystr :: IsString s => ReadM s
 nonEmptystr = do
@@ -35,9 +36,7 @@ parser =
   subparser
     (command "start"
         (info
-          ((
-            PitangaStart <$> parserStart
-          ) <**> helper)
+          (PitangaStart <$> parserStart <**> helper)
           $ progDesc "Start a new task"
         )
       )
@@ -73,6 +72,14 @@ parser =
           $ progDesc "Export"
         )
       )
+  <|>
+  subparser
+    (command "amend"
+        (info
+          (PitangaAmend <$> Amend.parser <**> helper)
+          $ progDesc "Export"
+        )
+      )
 
 main :: IO ()
 main = pitangaCommand =<< execParser opts
@@ -93,3 +100,4 @@ pitangaCommand (PitangaStop) = stopLog
 pitangaCommand (PitangaCommandResume x) = resumeTask' x
 pitangaCommand (PitangaLog x) = showLog x
 pitangaCommand (PitangaExport x) = work x
+pitangaCommand (PitangaAmend x) = amend x

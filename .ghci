@@ -2,5 +2,7 @@
 :set -Wno-type-defaults
 -- :set args --group-by-day-and-task --from "10 3 2019"
 -- :set args export --group-by-day-and-task --from "10 3 2019"
-:set args resume --suggestions
+-- :set args resume --suggestions
 -- :set args resume --accept-suggestion ""
+:set args amend --end "02:01" --duration "1"
+-- :set ar gs amend --restart

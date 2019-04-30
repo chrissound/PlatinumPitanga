@@ -12,5 +12,12 @@ import Data.Text
 import ResumeTask
 import Log
 import Export
+import Amend
 
-data PitangaCommand = PitangaStart (Text, Text) | PitangaStop | PitangaCommandResume PitangaResume | PitangaLog (PitangaLogCommand) | PitangaExport Export2
+data PitangaCommand =
+    PitangaStart (Text, Text)
+  | PitangaStop
+  | PitangaCommandResume PitangaResume
+  | PitangaLog (PitangaLogCommand)
+  | PitangaExport Export2
+  | PitangaAmend PitangaAmendCommand

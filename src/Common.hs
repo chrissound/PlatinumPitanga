@@ -34,15 +34,29 @@ fmapAtIndex n f ls = a ++ (f item:b)
 logPath :: FilePath
 logPath = "log.json"
 
-encodeLogFile :: ToJSON a => a -> IO ()
+encodeLogFile :: [LogEntry] -> IO ()
 encodeLogFile v = do
   Data.ByteString.Lazy.Char8.writeFile logPath $ encodePretty v
 
 recordIsStopped :: (a,b,c, Maybe d) -> Bool
 recordIsStopped (_,_,_,endTime) = isJust endTime
 
-addJsonArrayElementFile :: LogEntry -> String -> IO ()
+addJsonArrayElementFile :: LogEntry -> FilePath -> IO ()
 addJsonArrayElementFile a fp = do
+  eitherDecodeFileStrict fp >>= \case
+    Right x -> do
+      if (length x == 0) || (recordIsStopped $ last x)
+        then
+          encodeLogFile $ x ++ [a]
+        else
+          do
+            printLastTask $ last x
+            putChunkLn $ chunk "Previous task has not been stopped, not able to start new." & fore red
+            error ""
+    Left e -> error e
+
+replaceLastJsonArrayElementFile :: LogEntry -> FilePath -> IO ()
+replaceLastJsonArrayElementFile a fp = do
   eitherDecodeFileStrict fp >>= \case
     Right x -> do
       if (length x == 0) || (recordIsStopped $ last x)
@@ -63,6 +77,11 @@ printStoppedTask x = do
 printStartedTask :: LogEntry -> IO ()
 printStartedTask x = do
   putChunkLn $ chunk "Started task:" & fore green
+  print $ x
+
+printAmendedTask :: LogEntry -> IO ()
+printAmendedTask x = do
+  putChunkLn $ chunk "Amended task:" & fore green
   print $ x
 
 printResumeTask :: LogEntry -> IO ()
