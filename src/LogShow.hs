@@ -21,7 +21,7 @@ import Data.Strings
 import Data.Bool
 
 showLastTaskLog :: IO ()
-showLastTaskLog = showTaskLog (PitangaLogCommand $ Just $ Last 1)
+showLastTaskLog = showTaskLog (PitangaLogCommand $ Just $ First 1)
 
 showTaskLog :: PitangaLogCommand -> IO ()
 showTaskLog (PitangaLogCommand limit) = do
