@@ -2,6 +2,11 @@
 {-# OPTIONS -Wno-unused-matches #-}
 module Amend where
 
+import DataSource
+import Log
+import LogShow
+import Types
+
 import Data.Time
 import Options.Applicative
 import Common
@@ -14,14 +19,6 @@ xyz :: String -> Maybe DiffTime
 xyz x =   parseTimeM True defaultTimeLocale "%H:%M:%S" x 
       <|> parseTimeM True defaultTimeLocale "%H:%M" x
       <|> parseTimeM True defaultTimeLocale "%M" x
-
-newtype Start = Start DiffTime deriving (Show)
-newtype End = End DiffTime deriving (Show)
-newtype Duration = Duration DiffTime deriving (Show)
-
-data PitangaAmendCommand =
-    PitangaAmendCommand (Maybe Start) (Maybe End) (Maybe Duration)
-  | PitangaAmendRestartCommand
 
 parser :: Parser PitangaAmendCommand
 parser =
@@ -74,7 +71,8 @@ amend (PitangaAmendRestartCommand) = do
       case last x of
         nr@(t, d, s, Nothing) -> do
           encodeLogFile $ init x ++ [over _3 (const ct) nr]
-          printAmendedTask nr
+          printAmendedTask
+          showLastTaskLog
         _ -> error "Task already ended..."
     Left ee -> error ee
 amend (PitangaAmendCommand (Just _) (Just _) (Just _)) = error "Can't set all three...?"
@@ -100,7 +98,8 @@ amend (PitangaAmendCommand s e d) = do
             $ over _4 (e')
             $ last x
       encodeLogFile $ init x ++ [nr]
-      printAmendedTask nr
+      printAmendedTask
+      showLastTaskLog
     Left ee -> error ee
 -- amend (PitangaAmendCommand _ _ _) = error "???"
 -- amend (PitangaAmendCommand (Just (Start s)) (Just (End e)) Nothing) = do

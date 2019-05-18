@@ -10,6 +10,7 @@ import Options.Applicative
 import StopTask
 import ResumeTask
 import Log
+import LogShow
 import Export (work, parser)
 import Types
 import Data.String

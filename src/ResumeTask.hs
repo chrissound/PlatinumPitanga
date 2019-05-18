@@ -14,13 +14,13 @@ import Control.Applicative
 import qualified Data.Attoparsec.Text as AP
 -- import qualified Data.Attoparsec.ByteString.Char8 as C8
 import Data.String.Conversions
+import LogShow
 -- import Main (startLog)
 
 import Common
--- import Types
+import Types
 import Options.Applicative
-
-data PitangaResume = PitangaResume Bool | PitangaResumeSuggestion String
+import DataSource
 
 resumeTask' :: PitangaResume -> IO ()
 resumeTask' (PitangaResumeSuggestion x ) = resumeSuggestion x
@@ -40,9 +40,10 @@ resumeTask = do
       if recordIsStopped lr
         then do
           addJsonArrayElementFile nr logPath
-          printResumeTask lr
+          printResumeTask
+          showLastTaskLog
         else do
-          printLastTask lr
+          showLastTaskLog
           error "Task still running"
     Left e -> error e
 
@@ -103,4 +104,5 @@ startLog (t,d) = do
   let nr = (t, d, time', Nothing)
   addJsonArrayElementFile
     (nr) logPath
-  printStartedTask nr
+  printStartedTask
+  showLastTaskLog

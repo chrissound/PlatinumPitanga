@@ -4,8 +4,9 @@ import Turtle (date)
 import Control.Lens.Tuple
 import Control.Lens.Setter
 import Rainbow
-
 import Common
+import DataSource
+import LogShow
 
 stopLog :: IO ()
 stopLog = do
@@ -22,5 +23,7 @@ stopLog = do
         False -> do
           encodeLogFile $
             fmapAtIndex (length ls - 1) (set _4 (Just time')) ls
-          printStoppedTask lr
+          printStoppedTask
+          showLastTaskLog
+
     Left e -> error e
