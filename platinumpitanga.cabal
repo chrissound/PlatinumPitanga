@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f2870081f905258e89b39b826d211c55b806a8b93b35bf1fa58e3a65292df800
+-- hash: 200b9733563f2b314f734f8ffdcbf5a67d06189fa9ff223ed9ee30d03f5a3e1a
 
 name:           platinumpitanga
 version:        1.0.0.0
@@ -18,13 +18,29 @@ extra-source-files:
 
 library
   exposed-modules:
+      Amend
       Common
+      DataSource
       Export
       Log
+      LogShow
       Main
       MyDebug
       ResumeTask
       StopTask
+      Time
+      Types
+      Amend
+      Common
+      DataSource
+      Export
+      Log
+      LogShow
+      Main
+      MyDebug
+      ResumeTask
+      StopTask
+      Time
       Types
   other-modules:
       Paths_platinumpitanga
@@ -56,12 +72,16 @@ library
 executable pitanga
   main-is: Main.hs
   other-modules:
+      Amend
       Common
+      DataSource
       Export
       Log
+      LogShow
       MyDebug
       ResumeTask
       StopTask
+      Time
       Types
       Paths_platinumpitanga
   hs-source-dirs:
