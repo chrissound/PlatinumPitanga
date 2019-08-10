@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 200b9733563f2b314f734f8ffdcbf5a67d06189fa9ff223ed9ee30d03f5a3e1a
+-- hash: 19507a9696290a431ea78073889b32007a78cbc04480c701688ea0f77eee0ac6
 
 name:           platinumpitanga
 version:        1.0.0.0
@@ -30,22 +30,9 @@ library
       StopTask
       Time
       Types
-      Amend
-      Common
-      DataSource
-      Export
-      Log
-      LogShow
-      Main
-      MyDebug
-      ResumeTask
-      StopTask
-      Time
-      Types
   other-modules:
       Paths_platinumpitanga
   hs-source-dirs:
-      src
       src
   default-extensions: LambdaCase
   build-depends:
@@ -64,7 +51,7 @@ library
     , string-conversions
     , strings
     , text
-    , time
+    , time >=1.9.2
     , turtle
     , vector
   default-language: Haskell2010
@@ -104,7 +91,7 @@ executable pitanga
     , string-conversions
     , strings
     , text
-    , time
+    , time >=1.9.2
     , turtle
     , vector
   default-language: Haskell2010

@@ -1,6 +1,6 @@
-source-dirs: src
 executables:
   pitanga:
+    source-dirs: src
     main: Main.main
 license-file: LICENSE
 build-type: Simple
@@ -16,7 +16,7 @@ dependencies:
 - bytestring
 - split
 - text
-- time
+- time >= 1.9.2
 - old-locale
 - directory
 - pretty-simple
@@ -33,8 +33,3 @@ default-extensions:
   - LambdaCase
 library:
   source-dirs: src
-  # exposed-modules:
-  #   - Hpack
-  #   - Hpack.Config
-  #   - Hpack.Render
-  #   - Hpack.Yaml
