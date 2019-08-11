@@ -1,3 +1,17 @@
-{ nixpkgs ? import <nixpkgs> {}, compiler ? "ghc864" } :
-nixpkgs.pkgs.haskell.packages.${compiler}.callCabal2nix "platinumpitanga" (./.) {}
-
+{
+  nixpkgs ? import <nixpkgs> {}
+, sources ? import ./nix/sources.nix
+, compiler ? "ghc864" } :
+let
+  niv = import sources.nixpkgs {
+    overlays = [
+      (_ : _ : { niv = import sources.niv {}; })
+    ] ;
+    config = {};
+  };
+  pkgs = niv.pkgs;
+in
+pkgs.haskell.lib.buildStackProject {
+  name = "platinumpitanga";
+  src = ./.;
+}
