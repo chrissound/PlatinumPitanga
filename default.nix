@@ -1,17 +1,7 @@
 {
-  nixpkgs ? import <nixpkgs> {}
-, sources ? import ./nix/sources.nix
-, compiler ? "ghc864" } :
-let
-  niv = import sources.nixpkgs {
-    overlays = [
-      (_ : _ : { niv = import sources.niv {}; })
-    ] ;
-    config = {};
-  };
-  pkgs = niv.pkgs;
-in
-pkgs.haskell.lib.buildStackProject {
-  name = "platinumpitanga";
-  src = ./.;
+  nixpkgs ? (import (builtins.fetchTarball "https://github.com/input-output-hk/nixpkgs/archive/a8f81dc037a5977414a356dd068f2621b3c89b60.tar.gz") ( haskellnix ))
+, haskellnix ? (import (builtins.fetchTarball https://github.com/input-output-hk/haskell.nix/archive/master.tar.gz))
+} :
+nixpkgs.haskell-nix.stackProject {
+  src = nixpkgs.haskell-nix.haskellLib.cleanGit { src = ./.; };
 }

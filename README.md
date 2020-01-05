@@ -63,6 +63,12 @@ Available options:
 
 ```
 
+## Installation
+
+```
+nix-build -A platinumpitanga.components.exes.pitanga
+```
+
 
 # Workflow 
 
