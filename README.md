@@ -6,6 +6,8 @@ An efficient cli time tracking application.
 - Storage in a simple `log.json` file in the current directory.
 - coloured syntax 
 
+![screenshot](./pp-demo.jpg)
+
 ## What problems does this solve?
 
 It adds efficiency to logging time - minimizing keystrokes.
