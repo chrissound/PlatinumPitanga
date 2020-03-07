@@ -1,16 +1,56 @@
 # PlatinumPitanga
 
-A to-the-point cli time tracking application with some influence from `git`?
+An efficient cli time tracking application.
 
-Saves the time entries to `log.json` file in the current directory. 
-
-Here is a quick demo:
-
-![Alt Text](./demo.gif)
+- influenced from git 
+- Storage in a simple `log.json` file in the current directory.
+- coloured syntax 
 
 ## What problems does this solve?
 
-It adds efficiency to logging time - minimal keystrokes.
+It adds efficiency to logging time - minimizing keystrokes.
+
+## Examples 
+
+
+Start a task:
+```
+$ pitanga start "Demonstrating an example" ""
+Started task:
+IN PROGRESS
+11:07:13 07/03/2020 - ---
+00:00:00 
+Demonstrating an example - 
+```
+
+Stop a task:
+```
+$ pitanga stop
+Stopped task:
+11:07:13 - 11:07:39
+07/03/2020
+00:00:25 
+Demonstrating an example - 
+```
+
+View the log:
+```
+pitanga log
+--------------------------------------------
+Today: 00:00:25 
+--------------------------------------------
+Week:  00:00:25 
+--------------------------------------------
+
+Demonstrating an example                     00:00:25 
+
+--------------------------------------------
+11:07:13 - 11:07:39
+07/03/2020
+00:00:25 
+Demonstrating an example - 
+```
+
 
 ## What are the limitations?
 
