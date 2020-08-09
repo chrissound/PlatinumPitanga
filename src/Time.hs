@@ -19,6 +19,10 @@ myFormatUtcDateOnly = formatTime defaultTimeLocale "%d/%m/%Y"
 myFormatDiffTime :: NominalDiffTime -> String
 myFormatDiffTime v =
   case formatTime defaultTimeLocale "%d" $ posixSecondsToUTCTime v of
-    "01" -> vvv
-    x -> mconcat ["days (", x, ")!!! ", vvv]
-    where vvv = formatTime defaultTimeLocale "%H:%M:%S" $ posixSecondsToUTCTime v
+    "01" -> vvv'
+    x -> mconcat ["days (", x, ")!!! ", vvv']
+    where
+      vvv = formatTime defaultTimeLocale "%H:%M:%S" $ posixSecondsToUTCTime v
+      vvv' = case formatTime defaultTimeLocale "%H" $ posixSecondsToUTCTime v of
+              "00" -> "   " ++ (formatTime defaultTimeLocale "%M:%S" $ posixSecondsToUTCTime v)
+              _  -> vvv

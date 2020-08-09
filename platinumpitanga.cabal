@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.31.2.
+-- This file has been generated from package.yaml by hpack version 0.34.2.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 19507a9696290a431ea78073889b32007a78cbc04480c701688ea0f77eee0ac6
+-- hash: 9801878c672a2f32ffbeeccde25ae5caba2ba0e5c985044f88df5957292b1732
 
 name:           platinumpitanga
 version:        1.0.0.0
@@ -20,6 +20,7 @@ library
   exposed-modules:
       Amend
       Common
+      Current
       DataSource
       Export
       Log
@@ -61,6 +62,7 @@ executable pitanga
   other-modules:
       Amend
       Common
+      Current
       DataSource
       Export
       Log

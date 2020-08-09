@@ -25,7 +25,10 @@ data PitangaCommand =
 
 
 data Limit = First Int | Last Int
-data PitangaLogCommand = PitangaLogCommand (Maybe Limit)
+data GroupBy = GroupBy String
+data GroupTasksBy = GroupTasksBy String
+
+data PitangaLogCommand = PitangaLogCommand (Maybe Limit) (Maybe GroupBy)
 
 data PitangaResume = PitangaResume Bool | PitangaResumeSuggestion String
 
@@ -42,6 +45,25 @@ data PitangaAmendCommand =
   | PitangaAmendRestartCommand
 
 type LogEntry = (Text, Text, UTCTime, Maybe (UTCTime))
+data LogEntry' = LogEntry' {
+    task' :: Text
+  , description' :: Text
+  , start' :: UTCTime
+  , end' :: Maybe UTCTime
+} deriving Show
+
+leToLe' :: (Text, Text, UTCTime, Maybe UTCTime) -> LogEntry'
+leToLe' (a,b,c,d) = LogEntry' a b c d
+
+logEntryToEntry :: UTCTime -> LogEntry' -> Entry
+logEntryToEntry t v = Entry
+  { task = task' v
+  , description = description' v
+  , start = start' v
+  , end = maybe t id (end' v)
+  }
+
+
 type WeekEntry = [(Day, NominalDiffTime)]
 data Entry = Entry {
     task :: Text
